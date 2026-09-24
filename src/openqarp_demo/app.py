@@ -351,11 +351,6 @@ def _(Status, charts, local_qaoa, local_tracker, mo, qaoa_snapshot, ui):
                                 ["Sampled cut", f"{local_qaoa.cut:.3f}", f"{_p.cut:.3f}"],
                                 ["Jobs", f"{local_qaoa.jobs}", f"{qaoa_snapshot.submitted}"],
                                 ["Credits", "0", f"{qaoa_snapshot.credits:,}"],
-                                [
-                                    "Wall time",
-                                    ui.duration(local_qaoa.seconds),
-                                    ui.duration(_p.seconds),
-                                ],
                             ],
                         )
                     ),
