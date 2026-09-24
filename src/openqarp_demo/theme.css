@@ -172,6 +172,48 @@ body,
 }
 .oq-banner strong { font-weight: 600; }
 .oq-banner.running { border-left: 4px solid #2b5bb5; }
+.oq-banner .oq-muted { color: var(--oq-ink-muted); font-size: 13px; }
+
+/* A spinner and moving stripes animate in CSS, so the panel reads as working
+   between redraws, which only happen when a job leaves or returns. */
+.oq-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 2px solid #c9d6ec;
+  border-top-color: #2b5bb5;
+  border-radius: 50%;
+  animation: oq-spin 0.8s linear infinite;
+}
+.oq-progress {
+  margin-top: 8px;
+  height: 6px;
+  border-radius: 3px;
+  background: #e8edf5;
+  overflow: hidden;
+}
+.oq-progress-fill {
+  height: 100%;
+  min-width: 8%;
+  border-radius: 3px;
+  background-color: #2b5bb5;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.28) 25%, transparent 25%,
+    transparent 50%, rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.28) 75%, transparent 75%
+  );
+  background-size: 16px 16px;
+  animation: oq-stripes 0.9s linear infinite;
+  transition: width 0.4s ease;
+}
+@keyframes oq-spin { to { transform: rotate(360deg); } }
+@keyframes oq-stripes { to { background-position: 16px 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .oq-spinner, .oq-progress-fill { animation: none; }
+}
 .oq-banner.finished { border-left: 4px solid var(--oq-good); }
 .oq-banner.stopped { border-left: 4px solid var(--oq-ink-muted); }
 .oq-banner.dropped { border-left: 4px solid var(--oq-warn); background: #fff8ec; }

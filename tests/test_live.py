@@ -158,3 +158,37 @@ def test_listener_is_called_from_the_worker_thread() -> None:
     thread.join()
     assert seen == [Status.RUNNING, Status.RUNNING, Status.FINISHED]
     assert tracker.snapshot.outcome == "done"
+
+
+def test_a_submission_redraws_before_its_job_returns() -> None:
+    """The dashboard sees a job in flight: submitted is ahead of completed while it runs."""
+    from types import SimpleNamespace
+
+    from openqarp_demo.live import JobCounter, Status, Tracker
+
+    seen: list[Snapshot] = []
+    tracker = Tracker(listener=seen.append, counter=JobCounter())
+    tracker.start()
+
+    def run(*, pubs, **kwargs):
+        in_flight = seen[-1]
+        assert in_flight.status is Status.RUNNING
+        assert (in_flight.submitted, in_flight.completed) == (1, 0)
+        return "job"
+
+    client = SimpleNamespace(jobs=SimpleNamespace(run=run))
+    tracker.counter.wrap(client)  # type: ignore[union-attr, arg-type]
+    client.jobs.run(pubs=[object()])
+    assert tracker.counter.completed == 1  # type: ignore[union-attr]
+
+
+def test_the_running_banner_shows_the_job_in_flight_and_a_progress_bar() -> None:
+    from openqarp_demo import ui
+    from openqarp_demo.live import Snapshot, Status
+
+    html = ui.banner(Snapshot(status=Status.RUNNING, submitted=4, completed=3), "QAOA", 13)
+    assert "Job 4 is running on the platform." in html
+    assert "3 of ~13 jobs complete" in html
+    assert 'class="oq-progress"' in html and 'class="oq-spinner"' in html
+    idle = ui.banner(Snapshot(status=Status.RUNNING, submitted=3, completed=3), "QAOA", 13)
+    assert "Preparing the next job." in idle

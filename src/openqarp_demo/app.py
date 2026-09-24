@@ -245,7 +245,7 @@ def _(charts, get_qaoa, local_qaoa, mo, ui):
     qaoa_snapshot = get_qaoa()
     mo.vstack(
         [
-            mo.Html(ui.banner(qaoa_snapshot, "QAOA")),
+            mo.Html(ui.banner(qaoa_snapshot, "QAOA", local_qaoa.jobs)),
             mo.hstack(
                 [
                     charts.convergence(
@@ -476,7 +476,7 @@ def _(Status, charts, get_pce, mo, pce_plan, ui):
     mo.stop(pce_snapshot.status is Status.IDLE)
     mo.vstack(
         [
-            mo.Html(ui.banner(pce_snapshot, "PCE")),
+            mo.Html(ui.banner(pce_snapshot, "PCE", pce_plan["jobs"])),
             mo.hstack(
                 [
                     charts.convergence(

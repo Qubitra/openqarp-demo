@@ -140,14 +140,39 @@ def code_diff(backend: str) -> str:
     return f'<div class="oq-diff">{lines}</div>'
 
 
-def banner(snapshot: Snapshot, stage: str) -> str:
+def progress(snapshot: Snapshot, expected_jobs: int | None) -> str:
+    """A bar that fills as jobs complete; its stripes move while a job is in flight."""
+    if expected_jobs:
+        # A run can take more jobs than projected, so the bar holds short of full until it ends.
+        pct = min(snapshot.completed / expected_jobs, 0.97) * 100
+    else:
+        pct = 100.0
+    return (
+        '<div class="oq-progress" role="progressbar" '
+        f'aria-valuenow="{snapshot.completed}" aria-valuemax="{expected_jobs or 0}">'
+        f'<div class="oq-progress-fill" style="width:{pct:.1f}%"></div></div>'
+    )
+
+
+def banner(snapshot: Snapshot, stage: str, expected_jobs: int | None = None) -> str:
     """What the run is doing, or why it ended, in one line."""
     status = snapshot.status
     if status is Status.IDLE:
         return ""
     if status is Status.RUNNING:
+        of = f" of ~{expected_jobs}" if expected_jobs else ""
+        job_out = snapshot.submitted > snapshot.completed
+        now = (
+            f"Job {snapshot.submitted} is running on the platform."
+            if job_out
+            else "Preparing the next job."
+        )
         text = (
-            f"<strong>{_e(stage)} is running.</strong> {snapshot.completed} jobs complete so far."
+            f'<span class="oq-spinner" aria-hidden="true"></span>'
+            f"<strong>{_e(stage)} is running.</strong> {now} "
+            f'<span class="oq-muted">{snapshot.completed}{of} jobs complete · '
+            f"{duration(snapshot.elapsed)} elapsed</span>"
+            f"{progress(snapshot, expected_jobs)}"
         )
     elif status is Status.FINISHED:
         text = (

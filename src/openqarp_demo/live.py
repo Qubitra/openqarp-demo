@@ -85,6 +85,8 @@ class JobCounter:
     def __init__(self, on_submit: Callable[[], None] | None = None) -> None:
         self._lock = threading.Lock()
         self._on_submit = on_submit
+        # Called after a submission is counted, so a dashboard can show the job in flight.
+        self.on_change: Callable[[], None] | None = None
         self.submitted = 0
         self.completed = 0
         self.pubs = 0
@@ -103,6 +105,8 @@ class JobCounter:
             with self._lock:
                 self.submitted += 1
                 self.pubs += len(pubs)
+            if self.on_change is not None:
+                self.on_change()
             job = submit(pubs=pubs, **kwargs)
             with self._lock:
                 self.completed += 1
@@ -128,10 +132,22 @@ class Tracker:
     _started: float = 0.0
     _engine_jobs: int = 0
 
+    def __post_init__(self) -> None:
+        if self.counter is not None and self.counter.on_change is None:
+            self.counter.on_change = self._refresh
+
     @property
     def snapshot(self) -> Snapshot:
         with self._lock:
             return self._snapshot
+
+    def _refresh(self) -> None:
+        """Re-read the counts and redraw; a job has just been submitted."""
+        with self._lock:
+            if self._snapshot.status is not Status.RUNNING:
+                return
+            self._snapshot = self._counts(self._snapshot)
+        self._notify()
 
     def start(self) -> None:
         with self._lock:
