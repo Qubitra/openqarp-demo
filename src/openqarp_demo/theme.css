@@ -65,21 +65,15 @@ body,
   gap: 12px;
   flex-wrap: wrap;
 }
+/* marimo renders its controls in a shadow root: they inherit colour, so the chip sets it. */
 .oq-header-controls {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #fff;
-}
-.oq-header-controls label,
-.oq-header-controls .text-sm {
-  color: #dbe3ef !important;
-}
-.oq-header-controls select,
-.oq-header-controls input,
-.oq-header-controls button {
-  color: var(--oq-ink) !important;
   background: #fff;
+  color: var(--oq-ink);
+  border-radius: 8px;
+  padding: 4px 8px;
 }
 .oq-status {
   display: inline-flex;
