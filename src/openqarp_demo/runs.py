@@ -17,6 +17,8 @@ Adapted from OpenQARP's ``examples/use_cases/finance_portfolio_diversification.i
 
 from __future__ import annotations
 
+import contextlib
+import io
 import time
 from collections import Counter
 from collections.abc import Callable, Mapping
@@ -125,7 +127,10 @@ def run_qaoa(
         save_energy_history=True,
     ).build()
     qaoa.suppress_success_message = True
-    final_energy, _ = qaoa.run()
+    # OpenQARP prints "minimization did NOT finish successfully" whenever SciPy stops at the
+    # iteration cap; the dashboard shows the run's state, so the print stays off the console.
+    with contextlib.redirect_stdout(io.StringIO()):
+        final_energy, _ = qaoa.run()
 
     # The state at the optimum, measured, then sampled to read off the partition.
     circuit = deepcopy(qaoa.get_final_state_block())
