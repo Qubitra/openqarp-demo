@@ -138,8 +138,7 @@ def run_qaoa(
     sampler = Sampler(ket=circuit, n_shots=QAOA_SHOTS)
     readout = instrument(make_engine(RNG_SEED), tracker, run_kind="readout")
     readout.build([sampler])
-    # The engine's return value, not ``sampler.result``: qubitra-sdk 0.4.0 leaves the
-    # primitive's result unset, fixed in 0.4.1, and the return value holds on both.
+    # The engine's return value carries the sampled distribution for this one sampler.
     probabilities: Mapping[Any, float] = readout.run({})[0]
     seconds = time.perf_counter() - started
 

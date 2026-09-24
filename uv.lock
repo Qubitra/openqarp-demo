@@ -116,7 +116,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser", marker = "python_full_version < '3.15' and implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -1869,7 +1869,7 @@ name = "pyzmq"
 version = "27.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "implementation_name == 'pypy'" },
+    { name = "cffi", marker = "python_full_version < '3.15' and implementation_name == 'pypy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e7/8d/5b3d5631c2f4b4b8862f64cd0c9eb777b5710eeb5125b4be8dd0a200a4c0/pyzmq-27.2.0.tar.gz", hash = "sha256:54d4259d1bfae24ecdb5ca79f7acc2eac6c286a02d6a0ae617797cb45f0726d3", size = 292316, upload-time = "2026-08-20T19:08:21.19Z" }
 wheels = [
@@ -1955,7 +1955,7 @@ requires-dist = [
     { name = "networkx", specifier = ">=3.4" },
     { name = "numpy", specifier = ">=2" },
     { name = "plotly", specifier = ">=6" },
-    { name = "qubitra-sdk", extras = ["openqarp"], specifier = ">=0.4,<0.5" },
+    { name = "qubitra-sdk", extras = ["openqarp"], specifier = ">=0.4.3,<0.5" },
 ]
 
 [package.metadata.requires-dev]
@@ -1967,15 +1967,15 @@ dev = [
 
 [[package]]
 name = "qubitra-sdk"
-version = "0.4.0"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/07/98/ab5033deb8ec197d83c1ce5f2ec40c4ce3413c041b872c152643b8f38d13/qubitra_sdk-0.4.0.tar.gz", hash = "sha256:64dce4690a636a25d25b7bab906f21b8dfd729e983275464a6212dfff8a57f0b", size = 80883, upload-time = "2026-09-19T09:44:30.713Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/bb/b8eec3baaee3d1cc7b75d0477334333f139c0c59a97927e5e3fa432844f6/qubitra_sdk-0.4.3.tar.gz", hash = "sha256:bcf1781c9b47bf5a2e580bcbd6182dae1d0ac63b645529efd06ab8ae0cc19980", size = 96083, upload-time = "2026-09-24T13:27:56.007Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/54/06/a8cb644aed10cb20a6bb57eb6c30344ccc46bfe3c9cdfc2da4bdf997dc1f/qubitra_sdk-0.4.0-py3-none-any.whl", hash = "sha256:04a01c70c59552ee75c9a7fd1cc00c1525bd42a4df8026a70c3d97ca51e464d9", size = 56361, upload-time = "2026-09-19T09:44:29.607Z" },
+    { url = "https://files.pythonhosted.org/packages/88/4a/871ac7727863a875b6123e5624f828525168276121967a25444af21a7f29/qubitra_sdk-0.4.3-py3-none-any.whl", hash = "sha256:68d853912c87246042f9007033dd85384b2687a171a07bfe77dbf99807d2249a", size = 58312, upload-time = "2026-09-24T13:27:54.667Z" },
 ]
 
 [package.optional-dependencies]

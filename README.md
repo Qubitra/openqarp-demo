@@ -113,8 +113,8 @@ uv run marimo check src/openqarp_demo/app.py
 
 The tests make no network calls: the compute path runs on OpenQARP's local simulator.
 
-Requires `qubitra-sdk[openqarp]` 0.4. Results are read from the engine's return values,
-so the dashboard works on 0.4.0 and later 0.4 releases alike.
+Requires `qubitra-sdk[openqarp]` 0.4.3 or later in the 0.4 series, which returns short
+jobs promptly and retries a dropped submission without charging twice.
 
 ## Licence
 
