@@ -22,8 +22,9 @@ from qubitra.client import QubitraClient
 from qubitra.errors import ProviderError, QubitraError
 
 #: What a job costs and how long it takes on the hosted simulator, for projections.
+#: The time is the capped QAOA stage measured end to end with qubitra-sdk 0.4.3.
 CREDITS_PER_JOB = 10
-SECONDS_PER_JOB = 4.3
+SECONDS_PER_JOB = 1.2
 
 
 class Status(StrEnum):

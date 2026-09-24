@@ -49,15 +49,15 @@ charged job.
 
 ## Cost of each stage
 
-Every objective evaluation is one platform job, at 10 credits per job and about 4.3 s
+Every objective evaluation is one platform job, at 10 credits per job and about 1.2 s
 per job on the hosted simulator.
 
 | Stage | Setting | Jobs | Credits | Wall time |
 |---|---|---|---|---|
-| QAOA, 8 assets | 3 optimiser iterations (default) | 13 | 130 | about 1 min |
-| QAOA, 8 assets | each further iteration | +4 | +40 | +17 s |
-| PCE, 50 assets | 1 restart (default) | 283 | 2,830 | about 20 min |
-| PCE, 50 assets | 10 restarts, as in the notebook | about 3,760 | about 37,600 | about 4.5 h |
+| QAOA, 8 assets | 3 optimiser iterations (default) | 13 | 130 | about 15 s |
+| QAOA, 8 assets | each further iteration | +4 | +40 | +5 s |
+| PCE, 50 assets | 1 restart (default) | 283 | 2,830 | about 6 min |
+| PCE, 50 assets | 10 restarts, as in the notebook | about 3,760 | about 37,600 | about 75 min |
 
 The dashboard counts the exact figure for your settings before a run starts, by running
 the same optimisation locally.
