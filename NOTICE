@@ -1,0 +1,17 @@
+qubitra-openqarp-demo
+Copyright 2026 Qubitra
+
+Licensed under the Apache License, Version 2.0. The license text is the LICENSE file
+distributed with this software.
+
+This product includes material adapted from OpenQARP (Open Quantum Application Research
+Package), Copyright 2026 Fujitsu Limited, licensed under the Apache License, Version 2.0:
+
+  - The synthetic market model, market graph construction, diversification metrics,
+    classical references and the QAOA and PCE workflows in src/openqarp_demo/market.py
+    and src/openqarp_demo/runs.py are adapted from the notebook
+    examples/use_cases/finance_portfolio_diversification.ipynb
+    https://github.com/OpenQARP/openqarp
+
+OpenQARP itself is a runtime dependency, installed from PyPI, and is not redistributed
+here.

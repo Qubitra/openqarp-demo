@@ -1,0 +1,190 @@
+/* Light corporate dashboard theme for the OpenQARP on Qubitra demo. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+  --oq-page: #f4f6f9;
+  --oq-surface: #ffffff;
+  --oq-navy: #14284b;
+  --oq-navy-2: #1d3a6b;
+  --oq-ink: #1e293b;
+  --oq-ink-muted: #5b6b82;
+  --oq-border: #e2e7ee;
+  --oq-accent: #e8590c;
+  --oq-good: #1f7a4d;
+  --oq-warn: #b45309;
+  --oq-bad: #b42318;
+  --oq-radius: 10px;
+  --marimo-text-font: Inter, "IBM Plex Sans", system-ui, sans-serif;
+  --marimo-heading-font: Inter, "IBM Plex Sans", system-ui, sans-serif;
+  --marimo-monospace-font: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* The page is always the light theme, whatever the viewer's system preference. */
+body,
+#App,
+.mo-app {
+  background: var(--oq-page) !important;
+  color: var(--oq-ink);
+  font-family: var(--marimo-text-font);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  font-family: var(--marimo-heading-font);
+  color: var(--oq-navy);
+  letter-spacing: -0.01em;
+}
+
+/* ---- header bar -------------------------------------------------------------- */
+.oq-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, var(--oq-navy), var(--oq-navy-2));
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: var(--oq-radius);
+}
+.oq-header .oq-brand {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.oq-header .oq-brand small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #c7d2e3;
+}
+.oq-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.oq-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.oq-dot.ok { background: #4ade80; }
+.oq-dot.bad { background: #f87171; }
+.oq-dot.idle { background: #cbd5e1; }
+
+/* ---- cards and KPI tiles ----------------------------------------------------- */
+.oq-card {
+  background: var(--oq-surface);
+  border: 1px solid var(--oq-border);
+  border-radius: var(--oq-radius);
+  padding: 16px 18px;
+}
+.oq-card h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--oq-navy);
+}
+.oq-card p.oq-sub {
+  margin: 0 0 8px;
+  color: var(--oq-ink-muted);
+  font-size: 13px;
+}
+
+.oq-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.oq-kpi {
+  background: var(--oq-surface);
+  border: 1px solid var(--oq-border);
+  border-radius: var(--oq-radius);
+  padding: 12px 14px;
+}
+.oq-kpi .oq-kpi-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--oq-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.oq-kpi .oq-kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--oq-navy);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.oq-kpi .oq-kpi-note {
+  font-size: 12px;
+  color: var(--oq-ink-muted);
+}
+.oq-kpi.accent .oq-kpi-value { color: var(--oq-accent); }
+
+/* ---- the code diff ----------------------------------------------------------- */
+.oq-diff {
+  font-family: var(--marimo-monospace-font);
+  font-size: 13.5px;
+  line-height: 1.6;
+  background: #fbfcfd;
+  border: 1px solid var(--oq-border);
+  border-radius: 8px;
+  padding: 10px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+.oq-diff div { padding: 0 14px; }
+.oq-diff .ctx { color: var(--oq-ink-muted); }
+.oq-diff .del { background: #fdecec; color: #8a1c1c; }
+.oq-diff .add { background: #e7f5ec; color: #14532d; font-weight: 500; }
+
+/* ---- run state banners ------------------------------------------------------- */
+.oq-banner {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--oq-border);
+  background: var(--oq-surface);
+}
+.oq-banner strong { font-weight: 600; }
+.oq-banner.running { border-left: 4px solid #2b5bb5; }
+.oq-banner.finished { border-left: 4px solid var(--oq-good); }
+.oq-banner.stopped { border-left: 4px solid var(--oq-ink-muted); }
+.oq-banner.dropped { border-left: 4px solid var(--oq-warn); background: #fff8ec; }
+.oq-banner.failed { border-left: 4px solid var(--oq-bad); background: #fff3f2; }
+
+.oq-legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+table.oq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+table.oq-table th {
+  text-align: left;
+  color: var(--oq-ink-muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--oq-border);
+  padding: 6px 8px;
+}
+table.oq-table td {
+  border-bottom: 1px solid var(--oq-border);
+  padding: 6px 8px;
+}
+table.oq-table td.num { text-align: right; }
