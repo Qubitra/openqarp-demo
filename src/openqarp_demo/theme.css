@@ -59,6 +59,28 @@ body,
   font-weight: 400;
   color: #c7d2e3;
 }
+.oq-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.oq-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+}
+.oq-header-controls label,
+.oq-header-controls .text-sm {
+  color: #dbe3ef !important;
+}
+.oq-header-controls select,
+.oq-header-controls input,
+.oq-header-controls button {
+  color: var(--oq-ink) !important;
+  background: #fff;
+}
 .oq-status {
   display: inline-flex;
   align-items: center;

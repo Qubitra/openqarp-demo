@@ -56,7 +56,7 @@ def _e(text: object) -> str:
     return html.escape(str(text))
 
 
-def header(connection: Connection | None, backend: str) -> str:
+def header(connection: Connection | None, backend: str, controls: str = "") -> str:
     if connection is None:
         dot, text = "idle", "Not connected"
     elif connection.ok:
@@ -68,8 +68,10 @@ def header(connection: Connection | None, backend: str) -> str:
         '<div class="oq-brand">OpenQARP on Qubitra'
         "<small>Portfolio diversification with Fujitsu's OpenQARP, on a hosted simulator</small>"
         "</div>"
+        '<div class="oq-header-right">'
         f'<span class="oq-status"><span class="oq-dot {dot}"></span>{_e(text)}</span>'
-        "</div>"
+        f'<div class="oq-header-controls">{controls}</div>'
+        "</div></div>"
     )
 
 
@@ -87,6 +89,8 @@ def kpi_grid(tiles: Sequence[str]) -> str:
 
 
 def duration(seconds: float) -> str:
+    if seconds < 10:
+        return f"{seconds:.1f} s"
     if seconds < 90:
         return f"{seconds:.0f} s"
     if seconds < 5400:

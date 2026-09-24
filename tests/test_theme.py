@@ -39,8 +39,15 @@ def test_market_network_draws_every_asset() -> None:
     market = full_market()
     fig = charts.market_network(market, highlight=TOY_TICKERS)
     assert isinstance(fig, go.Figure)
-    markers = [t for t in fig.data if t.mode == "markers"]
-    assert sum(len(t.x) for t in markers) == market.n_assets
+    sectors = [t for t in fig.data if t.name in SECTOR_COLORS]
+    assert sum(len(t.x) for t in sectors) == market.n_assets
+    ringed = [
+        text
+        for t in sectors
+        for text, width in zip(t.text, t.marker.line.width, strict=True)
+        if width == 3
+    ]
+    assert sorted(ringed) == sorted(TOY_TICKERS)
 
 
 def test_partition_graph_colours_the_basket_with_the_accent() -> None:

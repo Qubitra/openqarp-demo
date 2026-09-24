@@ -83,13 +83,7 @@ def _(DEFAULT_BACKEND, connection, mo):
 @app.cell(hide_code=True)
 def _(backend, connection, env_key, key_input, mo, recheck, ui):
     _controls = [backend, recheck] if env_key else [key_input, backend, recheck]
-    mo.vstack(
-        [
-            mo.Html(ui.header(connection, backend.value)),
-            mo.hstack(_controls, justify="end", gap=1),
-        ],
-        gap=0.5,
-    )
+    mo.Html(ui.header(connection, backend.value, "".join(c.text for c in _controls)))
     return
 
 
@@ -169,7 +163,7 @@ def _(connection, mo, qaoa_control):
         return count + 1
 
     qaoa_run = mo.ui.run_button(
-        label="Run QAOA on the platform", kind="success", disabled=not connection.ok
+        label="Run on the platform", kind="success", disabled=not connection.ok
     )
     qaoa_stop = mo.ui.button(label="Stop", value=0, on_click=_stop, kind="danger")
     return qaoa_run, qaoa_stop
@@ -336,7 +330,9 @@ def _(Status, charts, local_qaoa, local_tracker, mo, qaoa_snapshot, ui):
                 "### Laptop against platform\n"
                 "The same QAOA, the same seeds, run on OpenQARP's local `QarpEngine` and on "
                 f"the platform. The largest per-job difference in the objective is "
-                f"**{_max_delta:.1e}**."
+                f"**{_max_delta:.1e}**. The sampled cut is read from 10,000 shots of the "
+                "final state, so the most likely bitstring can differ between the two "
+                "samplers when outcomes are close in probability."
             ),
             mo.hstack(
                 [

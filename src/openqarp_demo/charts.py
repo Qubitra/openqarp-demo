@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
-import networkx as nx
 import numpy as np
 import plotly.graph_objects as go
 
@@ -30,9 +29,22 @@ Positions = Mapping[int, tuple[float, float]]
 
 
 def market_layout(market: Market) -> Positions:
-    """A stable force-directed layout: same-sector assets pull together."""
-    layout = nx.spring_layout(market.graph, weight="weight", seed=7, k=0.35, iterations=200)
-    return {int(node): (float(x), float(y)) for node, (x, y) in layout.items()}
+    """Sectors as clusters on a ring, each sector's assets on a small circle of its own.
+
+    Same-sector assets are near-cliques, so a force layout folds each sector into a point;
+    placing the clusters explicitly keeps every asset and every cross-sector edge visible.
+    """
+    sectors = list(dict.fromkeys(market.sectors))
+    pos: dict[int, tuple[float, float]] = {}
+    for s_index, sector in enumerate(sectors):
+        angle = np.pi / 2 - 2 * np.pi * s_index / len(sectors)
+        cx, cy = 1.0 * np.cos(angle), 1.0 * np.sin(angle)
+        members = [i for i, name in enumerate(market.sectors) if name == sector]
+        radius = 0.12 + 0.03 * len(members)
+        for m_index, node in enumerate(members):
+            theta = angle + np.pi + 2 * np.pi * m_index / len(members)
+            pos[node] = (float(cx + radius * np.cos(theta)), float(cy + radius * np.sin(theta)))
+    return pos
 
 
 def sector_ring_layout(market: Market) -> Positions:
@@ -108,17 +120,14 @@ def market_network(market: Market, highlight: Sequence[str] = ()) -> go.Figure:
             )
         )
     if highlight:
-        ringed = [market.tickers.index(t) for t in highlight]
+        # A legend key for the ring; the names are on hover, and on the partition chart.
         fig.add_trace(
             go.Scatter(
-                x=[pos[i][0] for i in ringed],
-                y=[pos[i][1] for i in ringed],
-                mode="text",
-                text=[market.tickers[i] for i in ringed],
-                textposition="top center",
-                textfont={"size": 11, "color": NAVY},
-                hoverinfo="skip",
-                showlegend=False,
+                x=[None],
+                y=[None],
+                mode="markers",
+                name="QAOA market (ringed)",
+                marker={"size": 13, "color": "#FFFFFF", "line": {"color": NAVY, "width": 3}},
             )
         )
     return _frame(fig, 460)
