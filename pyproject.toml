@@ -15,7 +15,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
-    "qubitra-sdk[openqarp]>=0.4.3,<0.5",
+    "qubitra-sdk[openqarp]>=0.4.4,<0.5",
     "marimo>=0.25",
     "plotly>=6",
     "numpy>=2",

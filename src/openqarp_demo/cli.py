@@ -14,6 +14,8 @@ APP = Path(__file__).with_name("app.py")
 
 def build_command(args: argparse.Namespace) -> list[str]:
     command = [sys.executable, "-m", "marimo", "edit" if args.edit else "run", str(APP)]
+    if args.host is not None:
+        command += ["--host", args.host]
     if args.port is not None:
         command += ["--port", str(args.port)]
     if args.headless:
@@ -30,6 +32,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument("--edit", action="store_true", help="open the app as an editable notebook")
+    parser.add_argument("--host", default=None, help="address to bind, e.g. 0.0.0.0 in a container")
     parser.add_argument("--port", type=int, default=None, help="port to serve on")
     parser.add_argument(
         "--headless", action="store_true", help="serve without opening a browser window"

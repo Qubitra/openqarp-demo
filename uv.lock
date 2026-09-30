@@ -1955,7 +1955,7 @@ requires-dist = [
     { name = "networkx", specifier = ">=3.4" },
     { name = "numpy", specifier = ">=2" },
     { name = "plotly", specifier = ">=6" },
-    { name = "qubitra-sdk", extras = ["openqarp"], specifier = ">=0.4.3,<0.5" },
+    { name = "qubitra-sdk", extras = ["openqarp"], specifier = ">=0.4.4,<0.5" },
 ]
 
 [package.metadata.requires-dev]
@@ -1967,15 +1967,15 @@ dev = [
 
 [[package]]
 name = "qubitra-sdk"
-version = "0.4.3"
+version = "0.4.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/bb/b8eec3baaee3d1cc7b75d0477334333f139c0c59a97927e5e3fa432844f6/qubitra_sdk-0.4.3.tar.gz", hash = "sha256:bcf1781c9b47bf5a2e580bcbd6182dae1d0ac63b645529efd06ab8ae0cc19980", size = 96083, upload-time = "2026-09-24T13:27:56.007Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/60/9b/d9b8c85f89d1d1bb4e44c9c8fd0ff28853cb2620bc3d7eab42f804bfced4/qubitra_sdk-0.4.4.tar.gz", hash = "sha256:9cf996b547a61bd3099ca2508da036d028b94b46c9df4023afeb6892aad4303a", size = 96107, upload-time = "2026-09-30T09:49:53.085Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/4a/871ac7727863a875b6123e5624f828525168276121967a25444af21a7f29/qubitra_sdk-0.4.3-py3-none-any.whl", hash = "sha256:68d853912c87246042f9007033dd85384b2687a171a07bfe77dbf99807d2249a", size = 58312, upload-time = "2026-09-24T13:27:54.667Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/fc/a28d9ca130ec9c6c40ab42ff4d908278214f01837116e29dcceb33bb20de/qubitra_sdk-0.4.4-py3-none-any.whl", hash = "sha256:3f72cc53803e6a76ac9b490cd717c16074fbf4ae74c08d4a071c820105416702", size = 58323, upload-time = "2026-09-30T09:49:51.778Z" },
 ]
 
 [package.optional-dependencies]

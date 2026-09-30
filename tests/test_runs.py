@@ -8,6 +8,7 @@ from openqarp_demo.live import Status, Tracker
 from openqarp_demo.market import Market, full_market, toy_market
 from openqarp_demo.runs import (
     local_engines,
+    max_pce_restarts,
     pce_qubits,
     project_qaoa_jobs,
     run_pce,
@@ -56,3 +57,17 @@ def test_one_pce_restart_beats_a_random_split(market: Market) -> None:
     assert outcome.jobs == len(tracker.snapshot.points) > 100
     assert all(p.value is not None for p in tracker.snapshot.points)
     assert sum(outcome.sector_mix.values()) == len(outcome.basket.basket)
+
+
+def test_pce_restarts_default_to_the_notebooks_ten() -> None:
+    assert max_pce_restarts({}) == 10
+
+
+def test_pce_restarts_follow_the_environment_cap() -> None:
+    assert max_pce_restarts({"QUBITRA_DEMO_MAX_PCE_RESTARTS": "2"}) == 2
+
+
+def test_pce_restarts_cap_is_clamped_and_ignores_junk() -> None:
+    assert max_pce_restarts({"QUBITRA_DEMO_MAX_PCE_RESTARTS": "0"}) == 1
+    assert max_pce_restarts({"QUBITRA_DEMO_MAX_PCE_RESTARTS": "50"}) == 10
+    assert max_pce_restarts({"QUBITRA_DEMO_MAX_PCE_RESTARTS": "lots"}) == 10
