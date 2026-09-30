@@ -12,7 +12,7 @@ OpenQARP runs its algorithms against an *engine*. Replace the local simulator wi
 + from qubitra.openqarp import QubitraEngine
 
 - engine = QarpEngine()
-+ engine = QubitraEngine("sim-openqarp-26")
++ engine = QubitraEngine("sim-statevector-26q-openqarp")
 
   qaoa = QAOA(problem=market_graph, n_layers=3, engine=engine).build()
   energy, parameters = qaoa.run()
@@ -64,21 +64,20 @@ the same optimisation locally.
 
 ## Getting an account and an API key
 
-1. Ask Qubitra for an account on the development deployment,
-   `https://q-plat-dev.cloud.qubitra.io`.
+1. Ask Qubitra for an account on `https://q.cloud.qubitra.io`.
 2. Sign in to the console and create an API key. The key starts with `qpk_` and is shown
    once, when it is created.
-3. Put the key and the deployment's API address in your environment:
+3. Put the key in your environment:
 
 ```bash
 export QUBITRA_API_KEY=qpk_...
-export QUBITRA_API_URL=https://q-plat-dev.cloud.qubitra.io/api
 ```
 
 | Variable | Required | Meaning |
 |---|---|---|
 | `QUBITRA_API_KEY` | yes | Your API key. It identifies your organization. |
-| `QUBITRA_API_URL` | no | The deployment to reach. Defaults to Qubitra's hosted deployment. |
+| `QUBITRA_API_URL` | no | The deployment to reach. Defaults to `https://q.cloud.qubitra.io/api`. |
+| `QUBITRA_DEMO_MAX_PCE_RESTARTS` | no | The most PCE restarts the dashboard offers, 1 to 10. Defaults to 10. |
 
 If `QUBITRA_API_KEY` is unset, the dashboard asks for the key in a password field. The
 key stays in the running process's memory and is never written to disk or logged.
@@ -98,8 +97,18 @@ uv run qubitra-openqarp-demo
 ```
 
 The dashboard opens in your browser. `--edit` opens the same file as an editable
-[marimo](https://marimo.io) notebook, `--port` picks the port and `--headless` skips
-opening a browser window.
+[marimo](https://marimo.io) notebook, `--host` picks the address to bind, `--port`
+the port, and `--headless` skips opening a browser window.
+
+## Hosting
+
+The `Dockerfile` serves the dashboard on port 7860, the port Hugging Face Spaces expects.
+`deploy/hf-space/push.sh <owner>/<space>` publishes the current commit to a Docker Space.
+Give the Space two secrets:
+
+- `QUBITRA_API_KEY`: a key from an organization whose credit balance is the demo's budget.
+  Every visitor spends from it, and runs stop when it is empty.
+- `QUBITRA_DEMO_MAX_PCE_RESTARTS`: `1`, so a single run costs at most about 2,830 credits.
 
 ## Development
 
@@ -113,7 +122,7 @@ uv run marimo check src/openqarp_demo/app.py
 
 The tests make no network calls: the compute path runs on OpenQARP's local simulator.
 
-Requires `qubitra-sdk[openqarp]` 0.4.3 or later in the 0.4 series, which returns short
+Requires `qubitra-sdk[openqarp]` 0.4.4 or later in the 0.4 series, which returns short
 jobs promptly and retries a dropped submission without charging twice.
 
 ## Licence

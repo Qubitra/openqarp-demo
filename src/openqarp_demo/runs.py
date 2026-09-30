@@ -4,7 +4,7 @@ Both are OpenQARP algorithms taking a ``qarp.engines.Engine``, so the platform s
 where a local simulator normally does and the engine is the only line that differs:
 
     engine = QarpEngine(seed=...)              # a laptop
-    engine = QubitraEngine("sim-openqarp-26")  # the platform
+    engine = QubitraEngine("sim-statevector-26q-openqarp")  # the platform
 
 Every objective evaluation is one platform job, so the optimiser sets the bill. QAOA asks
 the engine for a batched parameter-shift gradient, which puts every stencil point of a
@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import os
 import time
 from collections import Counter
 from collections.abc import Callable, Mapping
@@ -49,7 +50,23 @@ from openqarp_demo.market import (
     random_cut,
 )
 
-DEFAULT_BACKEND = "sim-openqarp-26"
+DEFAULT_BACKEND = "sim-statevector-26q-openqarp"
+
+#: The PCE restart slider's ceiling. The notebook runs 10; a hosted copy spending a shared
+#: key sets ``QUBITRA_DEMO_MAX_PCE_RESTARTS`` lower, so one visitor cannot spend the budget.
+PCE_RESTARTS_CEILING = 10
+ENV_MAX_PCE_RESTARTS = "QUBITRA_DEMO_MAX_PCE_RESTARTS"
+
+
+def max_pce_restarts(environ: Mapping[str, str] | None = None) -> int:
+    """The most PCE restarts a viewer may pick: the environment's cap, within 1..10."""
+    raw = (os.environ if environ is None else environ).get(ENV_MAX_PCE_RESTARTS, "")
+    try:
+        cap = int(raw)
+    except ValueError:
+        return PCE_RESTARTS_CEILING
+    return max(1, min(cap, PCE_RESTARTS_CEILING))
+
 
 QAOA_LAYERS = 3
 QAOA_SHOTS = 10_000

@@ -21,6 +21,7 @@ def _():
         DEFAULT_BACKEND,
         DEFAULT_QAOA_ITERATIONS,
         local_engines,
+        max_pce_restarts,
         pce_qubits,
         platform_engines,
         project_pce_jobs,
@@ -39,6 +40,7 @@ def _():
         charts,
         full_market,
         local_engines,
+        max_pce_restarts,
         mo,
         os,
         pce_qubits,
@@ -364,8 +366,10 @@ def _(Status, charts, local_qaoa, local_tracker, mo, qaoa_snapshot, ui):
 
 
 @app.cell(hide_code=True)
-def _(market, mo, pce_qubits):
-    pce_restarts = mo.ui.slider(1, 10, value=1, label="PCE restarts", show_value=True)
+def _(market, max_pce_restarts, mo, pce_qubits):
+    pce_restarts = mo.ui.slider(
+        1, max_pce_restarts(), value=1, label="PCE restarts", show_value=True
+    )
     pce_estimate = mo.ui.run_button(label="Estimate the cost")
     mo.vstack(
         [

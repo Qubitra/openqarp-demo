@@ -20,3 +20,8 @@ def test_edit_port_and_headless_flags() -> None:
     command = build_command(parse_args(["--edit", "--port", "2719", "--headless"]))
     assert command[3] == "edit"
     assert command[-3:] == ["--port", "2719", "--headless"]
+
+
+def test_host_flag_binds_the_given_address() -> None:
+    command = build_command(parse_args(["--host", "0.0.0.0", "--port", "7860", "--headless"]))
+    assert command[-5:] == ["--host", "0.0.0.0", "--port", "7860", "--headless"]
