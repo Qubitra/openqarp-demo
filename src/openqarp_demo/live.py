@@ -2,8 +2,8 @@
 
 Every job the platform engine submits passes through ``QubitraClient.jobs.run``, so a
 wrapper there counts platform jobs exactly. The engine itself is instrumented too: each
-``run``, ``run_gradient`` or ``batch_run`` call is one job on the platform, which gives a
-local engine the same count and gives both the objective value a job produced.
+``run``, ``run_gradient`` or ``batch_run`` call is one job on the platform, and records the
+objective value that job produced.
 
 A :class:`Tracker` holds that trace behind a lock and hands an immutable
 :class:`Snapshot` to a listener after every change, which is what the dashboard renders.

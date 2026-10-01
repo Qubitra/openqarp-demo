@@ -16,15 +16,15 @@ def _():
 
     from openqarp_demo import charts, ui
     from openqarp_demo.live import JobCounter, Snapshot, Status, Tracker
-    from openqarp_demo.market import TOY_TICKERS, full_market, toy_market
+    from openqarp_demo.market import TOY_TICKERS, brute_force_max_cut, full_market, toy_market
     from openqarp_demo.runs import (
         DEFAULT_BACKEND,
         DEFAULT_QAOA_ITERATIONS,
-        local_engines,
+        estimate_pce_jobs,
+        estimate_qaoa_jobs,
         max_pce_restarts,
         pce_qubits,
         platform_engines,
-        project_pce_jobs,
         run_pce,
         run_qaoa,
     )
@@ -37,15 +37,16 @@ def _():
         Status,
         TOY_TICKERS,
         Tracker,
+        brute_force_max_cut,
         charts,
+        estimate_pce_jobs,
+        estimate_qaoa_jobs,
         full_market,
-        local_engines,
         max_pce_restarts,
         mo,
         os,
         pce_qubits,
         platform_engines,
-        project_pce_jobs,
         run_pce,
         run_qaoa,
         toy_market,
@@ -140,14 +141,12 @@ def _(DEFAULT_QAOA_ITERATIONS, mo):
 
 
 @app.cell(hide_code=True)
-def _(Tracker, iterations, local_engines, run_qaoa, toy):
-    # The same QAOA on a laptop: it is the side-by-side reference, and counting its engine
-    # calls gives the platform run's job count before anything is submitted.
-    local_tracker = Tracker()
-    local_qaoa = run_qaoa(
-        local_engines(), toy, max_iterations=iterations.value, tracker=local_tracker
-    )
-    return local_qaoa, local_tracker
+def _(brute_force_max_cut, estimate_qaoa_jobs, iterations, toy):
+    # The run's size before anything is submitted, and the exact answer it is measured
+    # against: Max-Cut on eight assets is 256 partitions, enumerated classically.
+    qaoa_expected_jobs = estimate_qaoa_jobs(iterations.value)
+    qaoa_optimum, _ = brute_force_max_cut(toy.graph, toy.n_assets)
+    return qaoa_expected_jobs, qaoa_optimum
 
 
 @app.cell(hide_code=True)
@@ -172,7 +171,7 @@ def _(connection, mo, qaoa_control):
 
 
 @app.cell(hide_code=True)
-def _(iterations, local_qaoa, mo, qaoa_run, qaoa_stop, ui):
+def _(iterations, mo, qaoa_expected_jobs, qaoa_run, qaoa_stop, ui):
     mo.vstack(
         [
             mo.md(
@@ -184,7 +183,7 @@ def _(iterations, local_qaoa, mo, qaoa_run, qaoa_stop, ui):
             mo.hstack(
                 [
                     iterations,
-                    mo.md(f"Projected: **{ui.projection(local_qaoa.jobs)}**"),
+                    mo.md(f"Projected: **{ui.projection(qaoa_expected_jobs)}**"),
                     qaoa_run,
                     qaoa_stop,
                 ],
@@ -243,20 +242,20 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _(charts, get_qaoa, local_qaoa, mo, ui):
+def _(charts, get_qaoa, mo, qaoa_expected_jobs, qaoa_optimum, ui):
     qaoa_snapshot = get_qaoa()
     mo.vstack(
         [
-            mo.Html(ui.banner(qaoa_snapshot, "QAOA", local_qaoa.jobs)),
+            mo.Html(ui.banner(qaoa_snapshot, "QAOA", qaoa_expected_jobs)),
             mo.hstack(
                 [
                     charts.convergence(
                         qaoa_snapshot.points,
-                        reference=local_qaoa.optimum,
+                        reference=qaoa_optimum,
                         reference_label="Brute-force optimum",
-                        expected_jobs=local_qaoa.jobs,
+                        expected_jobs=qaoa_expected_jobs,
                     ),
-                    mo.Html(ui.run_kpis(qaoa_snapshot, local_qaoa.jobs, "Best expected cut")),
+                    mo.Html(ui.run_kpis(qaoa_snapshot, qaoa_expected_jobs, "Best expected cut")),
                 ],
                 widths=[2, 1],
                 align="center",
@@ -315,62 +314,10 @@ def _(Status, charts, mo, qaoa_snapshot, toy, ui):
 
 
 @app.cell(hide_code=True)
-def _(Status, charts, local_qaoa, local_tracker, mo, qaoa_snapshot, ui):
-    mo.stop(qaoa_snapshot.status is not Status.FINISHED)
-    _p = qaoa_snapshot.outcome
-    _local_values = [p.value for p in local_tracker.snapshot.points]
-    _platform_values = [p.value for p in qaoa_snapshot.points]
-    _deltas = [
-        abs(a - b)
-        for a, b in zip(_local_values, _platform_values, strict=False)
-        if a is not None and b is not None
-    ]
-    _max_delta = max(_deltas, default=0.0)
-    mo.vstack(
-        [
-            mo.md(
-                "### Laptop against platform\n"
-                "The same QAOA, the same seeds, run on OpenQARP's local `QarpEngine` and on "
-                f"the platform. The largest per-job difference in the objective is "
-                f"**{_max_delta:.1e}**. The sampled cut is read from 10,000 shots of the "
-                "final state, so the most likely bitstring can differ between the two "
-                "samplers when outcomes are close in probability."
-            ),
-            mo.hstack(
-                [
-                    charts.side_by_side(
-                        local_tracker.snapshot.points, qaoa_snapshot.points, local_qaoa.optimum
-                    ),
-                    mo.Html(
-                        ui.table(
-                            ["", "Local QarpEngine", "Qubitra platform"],
-                            [
-                                [
-                                    "Final expected cut",
-                                    f"{local_qaoa.final_expected_cut:.6f}",
-                                    f"{_p.final_expected_cut:.6f}",
-                                ],
-                                ["Sampled cut", f"{local_qaoa.cut:.3f}", f"{_p.cut:.3f}"],
-                                ["Jobs", f"{local_qaoa.jobs}", f"{qaoa_snapshot.submitted}"],
-                                ["Credits", "0", f"{qaoa_snapshot.credits:,}"],
-                            ],
-                        )
-                    ),
-                ],
-                widths=[3, 2],
-                align="center",
-            ),
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
 def _(market, max_pce_restarts, mo, pce_qubits):
     pce_restarts = mo.ui.slider(
         1, max_pce_restarts(), value=1, label="PCE restarts", show_value=True
     )
-    pce_estimate = mo.ui.run_button(label="Estimate the cost")
     mo.vstack(
         [
             mo.md(
@@ -379,20 +326,18 @@ def _(market, max_pce_restarts, mo, pce_qubits):
                 f"**{pce_qubits(market)} qubits** using order-3 Pauli correlators. It is a "
                 "longer run, so the cost is projected before anything is submitted."
             ),
-            mo.hstack([pce_restarts, pce_estimate], justify="start", align="center", gap=1.5),
+            pce_restarts,
         ]
     )
-    return pce_estimate, pce_restarts
+    return (pce_restarts,)
 
 
 @app.cell(hide_code=True)
-def _(market, mo, pce_estimate, pce_restarts, project_pce_jobs):
-    mo.stop(not pce_estimate.value)
-    with mo.status.spinner(title="Counting the jobs locally…"):
-        pce_plan = {
-            "restarts": pce_restarts.value,
-            "jobs": project_pce_jobs(market, pce_restarts.value),
-        }
+def _(estimate_pce_jobs, pce_restarts):
+    pce_plan = {
+        "restarts": pce_restarts.value,
+        "jobs": estimate_pce_jobs(pce_restarts.value),
+    }
     return (pce_plan,)
 
 

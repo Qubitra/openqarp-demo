@@ -1,19 +1,27 @@
-"""The app's compute path, headless, on OpenQARP's local engine: no network."""
+"""The app's compute path, headless, with OpenQARP's local engine standing in for the
+platform: no network."""
 
 from __future__ import annotations
 
 import pytest
+from qarp.engines import QarpEngine
 
 from openqarp_demo.live import Status, Tracker
 from openqarp_demo.market import Market, full_market, toy_market
 from openqarp_demo.runs import (
-    local_engines,
+    EngineFactory,
+    estimate_pce_jobs,
+    estimate_qaoa_jobs,
     max_pce_restarts,
     pce_qubits,
-    project_qaoa_jobs,
     run_pce,
     run_qaoa,
 )
+
+
+def local_engines() -> EngineFactory:
+    """The platform's stand-in: OpenQARP's own simulator, seeded per engine."""
+    return lambda seed: QarpEngine(seed=seed)
 
 
 @pytest.fixture(scope="module")
@@ -39,11 +47,13 @@ def test_capped_qaoa_reaches_the_brute_force_optimum(market: Market) -> None:
     assert tracker.snapshot.values[-1][1] == pytest.approx(outcome.final_expected_cut)
 
 
-@pytest.mark.parametrize(("iterations", "jobs"), [(1, 5), (2, 9), (3, 13)])
-def test_projection_counts_four_jobs_per_iteration_plus_readout(
-    market: Market, iterations: int, jobs: int
-) -> None:
-    assert project_qaoa_jobs(toy_market(market), iterations) == jobs
+@pytest.mark.parametrize("iterations", [1, 3, 6, 10])
+def test_the_qaoa_estimate_matches_the_run_to_two_jobs(market: Market, iterations: int) -> None:
+    jobs = run_qaoa(local_engines(), toy_market(market), max_iterations=iterations).jobs
+    estimate = estimate_qaoa_jobs(iterations)
+    assert estimate - 2 <= jobs <= estimate
+    if iterations <= 6:
+        assert jobs == estimate
 
 
 def test_one_pce_restart_beats_a_random_split(market: Market) -> None:
@@ -54,7 +64,7 @@ def test_one_pce_restart_beats_a_random_split(market: Market) -> None:
     assert outcome.n_qubits == pce_qubits(market) == 5
     assert outcome.cut > outcome.random_cut
     assert outcome.cut <= outcome.greedy_cut + 1e-9
-    assert outcome.jobs == len(tracker.snapshot.points) > 100
+    assert outcome.jobs == len(tracker.snapshot.points) == estimate_pce_jobs(1)
     assert all(p.value is not None for p in tracker.snapshot.points)
     assert sum(outcome.sector_mix.values()) == len(outcome.basket.basket)
 
