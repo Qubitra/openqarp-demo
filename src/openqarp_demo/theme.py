@@ -26,9 +26,9 @@ PAGE = "#F4F6F9"
 ACCENT = "#E8590C"
 #: The complement side of a partition, deliberately neutral.
 COMPLEMENT = "#5B6B82"
-#: A platform series and its local counterpart.
+#: The platform series, and a second series beside it.
 PLATFORM = "#2B5BB5"
-LOCAL = "#0B9A9E"
+SECONDARY = "#0B9A9E"
 REFERENCE = "#94A3B8"
 
 SECTOR_COLORS = {
@@ -55,7 +55,7 @@ def plotly_template() -> go.layout.Template:
             font={"family": FONT_FAMILY, "color": INK, "size": 13},
             paper_bgcolor=SURFACE,
             plot_bgcolor=SURFACE,
-            colorway=[PLATFORM, LOCAL, ACCENT, COMPLEMENT, REFERENCE],
+            colorway=[PLATFORM, SECONDARY, ACCENT, COMPLEMENT, REFERENCE],
             xaxis=axis,
             yaxis=axis,
             margin={"l": 48, "r": 16, "t": 16, "b": 40},

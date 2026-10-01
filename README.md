@@ -34,10 +34,7 @@ is a diversified basket.
 3. **Result**: the partition drawn on the market graph with the diversified basket
    highlighted. The basket's mean pairwise correlation is shown against the whole market
    and a random basket of the same size, and the cut against the brute-force optimum.
-4. **Laptop against platform**: the same QAOA on OpenQARP's local simulator and on the
-   platform. Their objective values match job for job, and each run's job count and wall
-   time are shown side by side.
-5. **Optional: all 50 assets with PCE**: Pauli Correlation Encoding fits the full
+4. **Optional: all 50 assets with PCE**: Pauli Correlation Encoding fits the full
    problem into 5 qubits. The projected job count, credits and wall time are shown
    before anything is submitted. The resulting basket is compared with a greedy local
    search and a random split.
@@ -59,8 +56,8 @@ per job on the hosted simulator.
 | PCE, 50 assets | 1 restart (default) | 283 | 2,830 | about 6 min |
 | PCE, 50 assets | 10 restarts, as in the notebook | about 3,760 | about 37,600 | about 75 min |
 
-The dashboard counts the exact figure for your settings before a run starts, by running
-the same optimisation locally.
+The dashboard shows the estimate for your settings before a run starts. Every circuit runs
+on the platform; nothing is simulated locally.
 
 ## Getting an account and an API key
 
@@ -114,13 +111,13 @@ Give the Space two secrets:
 
 ```bash
 uv sync
-uv run pytest            # market, theme, job counting, and the compute path on a local engine
+uv run pytest            # market, theme, job estimates, and the compute path
 uv run ruff check src tests
 uv run mypy
 uv run marimo check src/openqarp_demo/app.py
 ```
 
-The tests make no network calls: the compute path runs on OpenQARP's local simulator.
+The tests make no network calls: OpenQARP's local simulator stands in for the platform.
 
 Requires `qubitra-sdk[openqarp]` 0.4.4 or later in the 0.4 series, which returns short
 jobs promptly and retries a dropped submission without charging twice.

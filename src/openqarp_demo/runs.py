@@ -1,10 +1,9 @@
-"""The two quantum stages, each driven by whichever OpenQARP engine it is handed.
+"""The two quantum stages, run on the Qubitra platform through OpenQARP's engine seam.
 
-Both are OpenQARP algorithms taking a ``qarp.engines.Engine``, so the platform stands
-where a local simulator normally does and the engine is the only line that differs:
+Both are OpenQARP algorithms taking a ``qarp.engines.Engine``; ``QubitraEngine`` is that
+engine, so every circuit runs on the platform:
 
-    engine = QarpEngine(seed=...)              # a laptop
-    engine = QubitraEngine("sim-statevector-26q-openqarp")  # the platform
+    engine = QubitraEngine("sim-statevector-26q-openqarp")
 
 Every objective evaluation is one platform job, so the optimiser sets the bill. QAOA asks
 the engine for a batched parameter-shift gradient, which puts every stencil point of a
@@ -31,7 +30,7 @@ import numpy as np
 from qarp import config
 from qarp.algorithms import PCE, QAOA, Sampler, calculate_qubits
 from qarp.blocks import HEABlock
-from qarp.engines import Engine, QarpEngine
+from qarp.engines import Engine
 from qarp.optimizers import ScipyOptimizer
 
 from openqarp_demo.live import Tracker, instrument
@@ -78,11 +77,6 @@ PCE_ORDER = 3
 PCE_ENGINE_SEED = 1000
 
 EngineFactory = Callable[[int], Engine]
-
-
-def local_engines() -> EngineFactory:
-    """A laptop: OpenQARP's own simulator, seeded per engine."""
-    return lambda seed: QarpEngine(seed=seed)
 
 
 def platform_engines(backend_id: str, client: Any) -> EngineFactory:
@@ -177,9 +171,11 @@ def run_qaoa(
     )
 
 
-def project_qaoa_jobs(market: Market, max_iterations: int | None) -> int:
-    """The jobs a platform QAOA run submits, counted by running it locally."""
-    return run_qaoa(local_engines(), market, max_iterations=max_iterations).jobs
+def estimate_qaoa_jobs(max_iterations: int) -> int:
+    """About how many jobs a QAOA run submits: one per objective and one per gradient for
+    each iteration, plus the start and the readout. Exact to six iterations; beyond that the
+    optimiser can skip a line-search step, so the run comes in a job or two under."""
+    return 1 + 4 * max_iterations
 
 
 # -- PCE on the 50-asset market -----------------------------------------------------
@@ -287,6 +283,13 @@ def _report_pce_cuts(pce: Any, tracker: Tracker) -> None:
     pce.get_objective_function = reporting_objective
 
 
-def project_pce_jobs(market: Market, restarts: int) -> int:
-    """The jobs a platform PCE run submits, counted by running it locally."""
-    return run_pce(local_engines(), market, restarts=restarts).jobs
+#: Measured PCE job counts on the 50-asset market: the first restart, and the mean of each
+#: further one across the notebook's ten.
+PCE_FIRST_RESTART_JOBS = 283
+PCE_FURTHER_RESTART_JOBS = 386
+
+
+def estimate_pce_jobs(restarts: int) -> int:
+    """About how many jobs a PCE run submits. Later restarts start from other seeds and
+    take more or fewer steps, so beyond the first this is an average."""
+    return PCE_FIRST_RESTART_JOBS + PCE_FURTHER_RESTART_JOBS * (restarts - 1)

@@ -14,7 +14,6 @@ from openqarp_demo.theme import (
     COMPLEMENT,
     GRID,
     INK_MUTED,
-    LOCAL,
     NAVY,
     PLATFORM,
     REFERENCE,
@@ -221,42 +220,6 @@ def convergence(
             "range": [0.5, max(last_job, expected_jobs or 1) + 0.5],
         },
         yaxis={"title": {"text": y_title}},
-        hovermode="x unified",
-        margin={"l": 56, "r": 16, "t": 36, "b": 44},
-    )
-    return fig
-
-
-def side_by_side(
-    local: Sequence[JobPoint], platform: Sequence[JobPoint], optimum: float
-) -> go.Figure:
-    """The same QAOA on a laptop and on the platform, job for job."""
-    fig = go.Figure()
-    for name, points, color, dash, size in (
-        ("Local QarpEngine", local, LOCAL, "dash", 11),
-        ("Qubitra platform", platform, PLATFORM, "solid", 7),
-    ):
-        evaluated = [(p.job, p.value) for p in points if p.value is not None]
-        if not evaluated:
-            continue
-        jobs, values = zip(*evaluated, strict=True)
-        fig.add_trace(
-            go.Scatter(
-                x=jobs,
-                y=values,
-                mode="lines+markers",
-                name=name,
-                line={"color": color, "width": 2, "dash": dash},
-                marker={"size": size, "color": color, "line": {"color": "#FFFFFF", "width": 2}},
-                hovertemplate=name + "<br>Job %{x}: %{y:.6f}<extra></extra>",
-            )
-        )
-    fig.add_hline(y=optimum, line={"color": REFERENCE, "width": 1.5, "dash": "dash"})
-    fig.update_layout(
-        template=TEMPLATE_NAME,
-        height=300,
-        xaxis={"title": {"text": "Job"}},
-        yaxis={"title": {"text": "Expected cut"}},
         hovermode="x unified",
         margin={"l": 56, "r": 16, "t": 36, "b": 44},
     )

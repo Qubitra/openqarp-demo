@@ -113,8 +113,8 @@ def run_kpis(snapshot: Snapshot, expected_jobs: int | None, best_label: str = "B
 
 def projection(jobs: int) -> str:
     return (
-        f"{jobs:,} jobs · {jobs * CREDITS_PER_JOB:,} credits · "
-        f"about {duration(jobs * SECONDS_PER_JOB)} at {SECONDS_PER_JOB} s per job"
+        f"about {jobs:,} jobs · {jobs * CREDITS_PER_JOB:,} credits · "
+        f"{duration(jobs * SECONDS_PER_JOB)} at {SECONDS_PER_JOB} s per job"
     )
 
 

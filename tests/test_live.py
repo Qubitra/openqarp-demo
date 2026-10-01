@@ -170,7 +170,7 @@ def test_a_submission_redraws_before_its_job_returns() -> None:
     tracker = Tracker(listener=seen.append, counter=JobCounter())
     tracker.start()
 
-    def run(*, pubs, **kwargs):
+    def run(*, pubs: Any, **kwargs: Any) -> Any:
         in_flight = seen[-1]
         assert in_flight.status is Status.RUNNING
         assert (in_flight.submitted, in_flight.completed) == (1, 0)
